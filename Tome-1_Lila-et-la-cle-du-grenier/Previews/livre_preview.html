@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Lila et la clé du grenier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@500;700&family=Gloock&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #3a2a1e;
+    --cream: #fbf6ec;
+    --warm: #f4e8d6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #d9cdb5;
+    font-family: 'Patrick Hand', cursive;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A page = 8.5 in × 8.5 in square (KDP children's book standard) */
+  .page {
+    width: 8.5in;
+    height: 8.5in;
+    margin: 0.3in auto;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .illustration {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Text band at bottom of each page */
+  .caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.45in 0.55in 0.55in;
+    background: linear-gradient(
+      to bottom,
+      rgba(251, 246, 236, 0) 0%,
+      rgba(251, 246, 236, 0.85) 25%,
+      rgba(251, 246, 236, 0.97) 50%,
+      rgba(251, 246, 236, 1) 100%
+    );
+    text-align: center;
+    font-size: 28pt;
+    line-height: 1.25;
+    color: var(--ink);
+    font-family: 'Patrick Hand', cursive;
+  }
+
+  .page-number {
+    position: absolute;
+    bottom: 0.15in;
+    right: 0.3in;
+    font-size: 11pt;
+    color: var(--ink);
+    opacity: 0.55;
+    font-family: 'Caveat', cursive;
+  }
+
+  /* Cover page */
+  .cover {
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.8in;
+  }
+
+  .cover .cover-img-wrap {
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-bottom: 0.35in;
+  }
+
+  .cover .cover-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover h1 {
+    font-family: 'Gloock', serif;
+    font-size: 48pt;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 0.1in;
+    font-weight: normal;
+  }
+
+  .cover h2 {
+    font-family: 'Caveat', cursive;
+    font-size: 26pt;
+    font-weight: 500;
+    color: var(--ink);
+    opacity: 0.75;
+  }
+
+  /* Title page (after cover) */
+  .title-page {
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1in;
+  }
+
+  .title-page h1 {
+    font-family: 'Gloock', serif;
+    font-size: 56pt;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 0.4in;
+    font-weight: normal;
+  }
+
+  .title-page p {
+    font-family: 'Caveat', cursive;
+    font-size: 22pt;
+    color: var(--ink);
+    opacity: 0.7;
+    margin-bottom: 0.15in;
+  }
+
+  .title-page .ornament {
+    font-size: 32pt;
+    color: var(--ink);
+    opacity: 0.5;
+    margin: 0.4in 0;
+  }
+
+  /* End page */
+  .end-page {
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1in;
+  }
+
+  .end-page .fin {
+    font-family: 'Gloock', serif;
+    font-size: 72pt;
+    color: var(--ink);
+    margin-bottom: 0.5in;
+  }
+
+  .end-page p {
+    font-family: 'Caveat', cursive;
+    font-size: 20pt;
+    color: var(--ink);
+    opacity: 0.65;
+  }
+
+  /* Print styles */
+  @media print {
+    html, body { background: white; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      page-break-after: always;
+      break-after: page;
+    }
+    @page {
+      size: 8.5in 8.5in;
+      margin: 0;
+    }
+  }
+
+  /* On-screen reading helper */
+  @media screen {
+    body { padding: 20px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover">
+  <div class="cover-img-wrap">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065306_a2a6147c-a036-41f7-82f4-000c1ca4da90.png" alt="Couverture">
+  </div>
+  <h1>Lila<br>et la clé du grenier</h1>
+  <h2>Une aventure à travers cinq mondes</h2>
+</div>
+
+<!-- TITLE PAGE -->
+<div class="page title-page">
+  <p>Une histoire à lire le soir,<br>quand on a très envie de rêver</p>
+  <div class="ornament">✦  ✦  ✦</div>
+  <h1>Lila<br>et la clé<br>du grenier</h1>
+  <div class="ornament">✦  ✦  ✦</div>
+  <p>Pour les petits explorateurs<br>de 6 à 8 ans</p>
+</div>
+
+<!-- P1 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_061845_b960af10-2bbb-4f26-b87a-d3e563303b9b.png" alt="Page 1">
+  <div class="caption">Lila arrive chez sa grand-mère.<br>Cet été, une aventure magique l'attend.</div>
+  <div class="page-number">1</div>
+</div>
+
+<!-- P2 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065257_efbd8ddb-aaed-4e7c-bf9d-b8c35c90ec51.png" alt="Page 2">
+  <div class="caption">Au grenier, la poussière danse dans la lumière.<br>Quel mystère se cache ici ?</div>
+  <div class="page-number">2</div>
+</div>
+
+<!-- P3 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065306_a2a6147c-a036-41f7-82f4-000c1ca4da90.png" alt="Page 3">
+  <div class="caption">Une vieille clé en bronze brille au fond d'un coffre.<br>Et soudain, une petite porte apparaît…</div>
+  <div class="page-number">3</div>
+</div>
+
+<!-- P4 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065317_9e17f995-2636-4c7f-a7bf-b4e1a9b37133.png" alt="Page 4">
+  <div class="caption">Clic ! La clé tourne dans la serrure.<br>Une lumière verte tourbillonne autour d'elle.</div>
+  <div class="page-number">4</div>
+</div>
+
+<!-- P5 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065327_d801bb86-5c7e-45a3-a084-5c81db85fc40.png" alt="Page 5">
+  <div class="caption">Lila est devenue toute petite !<br>Une marguerite la dépasse, immense comme un arbre.</div>
+  <div class="page-number">5</div>
+</div>
+
+<!-- P6 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065448_6292596f-0e6d-4fa9-9301-bc9c2ecc8b33.png" alt="Page 6">
+  <div class="caption">« Bonjour ! » lui dit une coccinelle.<br>« Veux-tu monter sur mon dos ? »</div>
+  <div class="page-number">6</div>
+</div>
+
+<!-- P7 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065456_130ae184-cf39-4534-b6cf-e85cf77885b4.png" alt="Page 7">
+  <div class="caption">Elles survolent l'étang.<br>Les gouttes de rosée brillent comme des perles.</div>
+  <div class="page-number">7</div>
+</div>
+
+<!-- P8 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065504_59e60228-b7d4-4fed-8432-c18c19415165.png" alt="Page 8">
+  <div class="caption">Au pied d'un trèfle, une porte miroitante l'attend.<br>Lila la pousse doucement.</div>
+  <div class="page-number">8</div>
+</div>
+
+<!-- P9 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065513_081cb188-a3da-4114-bdb0-d17caf76d7e9.png" alt="Page 9">
+  <div class="caption">Plouf ! Lila plonge dans l'océan turquoise.<br>Quelle surprise : elle peut respirer sous l'eau !</div>
+  <div class="page-number">9</div>
+</div>
+
+<!-- P10 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065523_ffbeaed9-0546-4b06-a78f-3b3cf2130b8f.png" alt="Page 10">
+  <div class="caption">Une ville en corail s'éclaire de mille feux.<br>Des méduses dansent tout autour d'elle.</div>
+  <div class="page-number">10</div>
+</div>
+
+<!-- P11 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065650_cc636ed3-083b-4a4f-802c-6ae8aa828e07.png" alt="Page 11">
+  <div class="caption">Un hippocampe doré lui remet un message<br>caché dans une petite bouteille.</div>
+  <div class="page-number">11</div>
+</div>
+
+<!-- P12 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065658_61a52d1d-d0b0-48d9-85d2-88cdf0807af4.png" alt="Page 12">
+  <div class="caption">Le roi-pieuvre l'invite à son banquet.<br>Les algues lumineuses sont délicieuses !</div>
+  <div class="page-number">12</div>
+</div>
+
+<!-- P13 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065707_f3bf1af3-5a1f-4397-91cf-c124fee56998.png" alt="Page 13">
+  <div class="caption">Au cœur d'un nautile géant,<br>une porte nacrée attend Lila.</div>
+  <div class="page-number">13</div>
+</div>
+
+<!-- P14 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065715_9a968d0c-f702-4bdf-845d-47499c8cf168.png" alt="Page 14">
+  <div class="caption">Lila pose le pied sur un nuage rose.<br>Le ciel s'étend à l'infini.</div>
+  <div class="page-number">14</div>
+</div>
+
+<!-- P15 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065723_42aff1a7-2954-496d-b009-209eb8d6298d.png" alt="Page 15">
+  <div class="caption">Les Nuagets bondissent autour d'elle, tout doux.<br>Qu'est-ce qu'on rit !</div>
+  <div class="page-number">15</div>
+</div>
+
+<!-- P16 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065837_e49456ac-a9d9-4acc-8607-73c99763fe8a.png" alt="Page 16">
+  <div class="caption">Elle traverse un pont arc-en-ciel.<br>Tout est si haut, si beau !</div>
+  <div class="page-number">16</div>
+</div>
+
+<!-- P17 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065845_d071b759-9bce-4290-bc08-e8b943b98a44.png" alt="Page 17">
+  <div class="caption">L'orage gronde dans le ciel.<br>Lila aide les Nuagets à récolter la pluie dans des seaux.</div>
+  <div class="page-number">17</div>
+</div>
+
+<!-- P18 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065852_d7e58e68-5000-4f44-9054-8df1c4ec3dbb.png" alt="Page 18">
+  <div class="caption">Une porte est gravée dans un éclair.<br>Lila prend son courage à deux mains.</div>
+  <div class="page-number">18</div>
+</div>
+
+<!-- P19 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065900_b123ae66-bece-404d-a914-4090f02bb337.png" alt="Page 19">
+  <div class="caption">La voilà dans une forêt nocturne.<br>Des milliers de lucioles éclairent son chemin.</div>
+  <div class="page-number">19</div>
+</div>
+
+<!-- P20 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_065908_c556e137-4132-4214-8b30-55c20ecda5c8.png" alt="Page 20">
+  <div class="caption">Un renard argenté apparaît.<br>« Suis-moi », semble-t-il dire.</div>
+  <div class="page-number">20</div>
+</div>
+
+<!-- P21 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070013_f69820b6-1086-488d-8572-ada2fbf9195d.png" alt="Page 21">
+  <div class="caption">Dans la clairière, un cerf majestueux la regarde.<br>Ses bois brillent comme des étoiles.</div>
+  <div class="page-number">21</div>
+</div>
+
+<!-- P22 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070022_2aeb7ebb-e723-4d82-a2f7-6af56d4ebb7d.png" alt="Page 22">
+  <div class="caption">Autour du feu, Lila danse avec lapins,<br>chouette et hérisson.</div>
+  <div class="page-number">22</div>
+</div>
+
+<!-- P23 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070032_c9613233-bf7f-46e5-97da-c28edb6b7a93.png" alt="Page 23">
+  <div class="caption">Dans le tronc d'un vieux chêne,<br>une porte sculptée s'ouvre devant elle.</div>
+  <div class="page-number">23</div>
+</div>
+
+<!-- P24 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070045_f1ef0346-c896-420d-831f-f291db33697a.png" alt="Page 24">
+  <div class="caption">Lila entre dans une horlogerie sans fin.<br>Les engrenages dorés tournent tout autour.</div>
+  <div class="page-number">24</div>
+</div>
+
+<!-- P25 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070053_7cae1c5d-01f3-4098-ad35-8da9de7cdf2f.png" alt="Page 25">
+  <div class="caption">« Chaque porte est un instant »,<br>lui dit la vieille horlogère.</div>
+  <div class="page-number">25</div>
+</div>
+
+<!-- P26 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070103_98c46fac-e98a-4507-be4a-4d8d6cfbca77.png" alt="Page 26">
+  <div class="caption">Lila grimpe sur l'aiguille géante.<br>La ville en dessous ressemble à un rêve.</div>
+  <div class="page-number">26</div>
+</div>
+
+<!-- P27 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070113_6e4fd489-deee-493d-a782-8d50d2d3dfc3.png" alt="Page 27">
+  <div class="caption">Dans le sablier, une grande Lila<br>lui fait un clin d'œil complice.</div>
+  <div class="page-number">27</div>
+</div>
+
+<!-- P28 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070122_2dcdca8f-a637-48bb-a4da-268d600ef576.png" alt="Page 28">
+  <div class="caption">L'horlogère lui tend une dernière porte :<br>celle du retour à la maison.</div>
+  <div class="page-number">28</div>
+</div>
+
+<!-- P29 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070129_67003e15-037d-47e6-97e7-12b85a59042d.png" alt="Page 29">
+  <div class="caption">De retour au grenier, la clé est tiède dans sa main.<br>Au loin, le soleil se couche.</div>
+  <div class="page-number">29</div>
+</div>
+
+<!-- P30 -->
+<div class="page">
+  <img class="illustration" src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_070138_1657a14f-0938-47a2-9c7b-f63d7241042f.png" alt="Page 30">
+  <div class="caption">Lila range la clé dans le coffre.<br>Mamie sourit : « Tu as fait de beaux rêves ? »</div>
+  <div class="page-number">30</div>
+</div>
+
+<!-- END PAGE -->
+<div class="page end-page">
+  <div class="fin">Fin</div>
+  <p>… mais la clé reste là,<br>au fond du coffre,<br>prête pour la prochaine aventure.</p>
+</div>
+
+</body>
+</html>

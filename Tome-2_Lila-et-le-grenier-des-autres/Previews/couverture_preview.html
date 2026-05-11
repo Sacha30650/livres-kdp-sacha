@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Couverture wrap-around KDP — Tome 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fbf6ec;
+    --cream-deep: #f5ecdb;
+    --spine: #f0e5cd;
+    --ink: #3a1f10;
+    --ink-soft: #5a3520;
+    --ink-deep: #2d180c;
+    --bleed: rgba(220, 80, 80, 0.6);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: linear-gradient(180deg, #ebe1cd 0%, #d9caa5 100%);
+    color: var(--ink);
+    padding: 40px 20px 60px;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    max-width: 1400px;
+    margin: 0 auto 40px;
+    text-align: center;
+    color: var(--ink-deep);
+  }
+  .header .badge {
+    display: inline-block;
+    background: var(--cream);
+    color: var(--ink-soft);
+    padding: 7px 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(58, 31, 16, 0.15);
+    font-size: 13px;
+    font-style: italic;
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+  }
+  .header .meta {
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-soft);
+  }
+
+  .section-label {
+    max-width: 1400px;
+    margin: 50px auto 18px;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .section-label .specs {
+    display: block;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-soft);
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+
+  /* ==========================
+     WRAP-AROUND (horizontal)
+     ========================== */
+  .wraparound {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    aspect-ratio: 18.266 / 9.222;
+    position: relative;
+    background: var(--cream);
+    box-shadow:
+      0 20px 50px rgba(58, 31, 16, 0.3),
+      0 6px 14px rgba(58, 31, 16, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  /* Back panel: 0% to ~49.8% horizontally, full height */
+  .wraparound .back-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 49.8%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .wraparound .back-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Spine: tiny strip in middle */
+  .wraparound .spine {
+    position: absolute;
+    top: 0;
+    left: 49.8%;
+    width: 0.4%;
+    height: 100%;
+    background: var(--spine);
+  }
+
+  /* Front panel: ~50.2% to 100% */
+  .wraparound .front-panel {
+    position: absolute;
+    top: 0;
+    left: 50.2%;
+    width: 49.8%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .wraparound .front-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Bleed indicator (dashed red line marking trim area) */
+  .wraparound .trim-zone {
+    position: absolute;
+    top: 1.36%;
+    left: 0.68%;
+    right: 0.68%;
+    bottom: 1.36%;
+    border: 1px dashed var(--bleed);
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.5;
+  }
+
+  /* ==========================
+     OVERLAY: BACK COVER TEXTS
+     ========================== */
+  .wraparound .back-synopsis-overlay {
+    position: absolute;
+    top: 10%;
+    left: 4%;
+    width: 41%;
+    height: 70%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    padding: 20px;
+  }
+  .wraparound .back-synopsis-overlay p {
+    font-style: italic;
+    color: var(--ink-deep);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    font-size: clamp(10px, 1.0vw, 16px);
+    text-shadow: 0 1px 4px rgba(251, 246, 236, 0.95);
+  }
+  .wraparound .back-synopsis-overlay .closing {
+    font-family: 'Amatic SC', cursive;
+    font-style: normal;
+    font-weight: 700;
+    margin-top: 18px;
+    font-size: clamp(14px, 1.6vw, 26px);
+    color: var(--ink);
+    line-height: 1.15;
+  }
+
+  /* ==========================
+     OVERLAY: FRONT COVER TEXTS
+     ========================== */
+  .wraparound .front-collection {
+    position: absolute;
+    top: 3.5%;
+    right: 3.5%;
+    width: 22%;
+    z-index: 3;
+    text-align: right;
+    pointer-events: none;
+  }
+  .wraparound .front-collection .label {
+    font-size: clamp(7px, 0.7vw, 11px);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-deep);
+    opacity: 0.85;
+  }
+  .wraparound .front-collection .name {
+    margin-top: 3px;
+    font-style: italic;
+    color: var(--ink-deep);
+    font-size: clamp(10px, 1.1vw, 17px);
+  }
+
+  .wraparound .front-title {
+    position: absolute;
+    top: 18%;
+    left: 50.5%;
+    right: 0.7%;
+    z-index: 3;
+    text-align: center;
+    pointer-events: none;
+  }
+  .wraparound .front-title .main {
+    font-weight: 700;
+    color: var(--ink-deep);
+    font-size: clamp(28px, 4.5vw, 80px);
+    line-height: 1;
+    text-shadow: 0 2px 12px rgba(251, 246, 236, 0.6);
+  }
+  .wraparound .front-title .italic {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: clamp(18px, 2.7vw, 48px);
+    line-height: 1;
+    margin: 2% 0;
+  }
+  .wraparound .front-title .subtitle {
+    margin-top: 4%;
+    font-style: italic;
+    color: var(--ink-deep);
+    font-size: clamp(10px, 1.2vw, 22px);
+    text-shadow: 0 1px 6px rgba(251, 246, 236, 0.7);
+  }
+
+  .wraparound .front-author {
+    position: absolute;
+    bottom: 6%;
+    left: 50.5%;
+    right: 0.7%;
+    z-index: 3;
+    text-align: center;
+    font-family: 'Amatic SC', cursive;
+    font-weight: 700;
+    color: var(--ink-deep);
+    font-size: clamp(22px, 3.2vw, 55px);
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(251, 246, 236, 0.8);
+    pointer-events: none;
+  }
+
+  /* ==========================
+     SINGLE PANEL VIEWS
+     ========================== */
+  .panels-grid {
+    max-width: 1400px;
+    margin: 30px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  @media (max-width: 900px) {
+    .panels-grid { grid-template-columns: 1fr; }
+  }
+
+  .single-panel {
+    aspect-ratio: 1;
+    position: relative;
+    background: var(--cream);
+    box-shadow: 0 12px 28px rgba(58, 31, 16, 0.22);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .single-panel img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Front cover single view: overlay */
+  .single-front .collection-tag {
+    position: absolute;
+    top: 4%;
+    right: 4%;
+    z-index: 3;
+    text-align: right;
+    pointer-events: none;
+  }
+  .single-front .collection-tag .lbl {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink-deep);
+    opacity: 0.85;
+  }
+  .single-front .collection-tag .nm {
+    margin-top: 3px;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-deep);
+  }
+  .single-front .title-block {
+    position: absolute;
+    top: 18%;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    text-align: center;
+    pointer-events: none;
+  }
+  .single-front .title-block .main {
+    font-weight: 700;
+    color: var(--ink-deep);
+    font-size: clamp(36px, 8.5vw, 80px);
+    line-height: 1;
+    text-shadow: 0 2px 12px rgba(251, 246, 236, 0.65);
+  }
+  .single-front .title-block .it {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: clamp(22px, 5vw, 48px);
+    line-height: 1;
+    margin: 3% 0;
+  }
+  .single-front .title-block .sub {
+    margin-top: 5%;
+    font-style: italic;
+    color: var(--ink-deep);
+    font-size: clamp(13px, 2.3vw, 22px);
+    text-shadow: 0 1px 6px rgba(251, 246, 236, 0.75);
+  }
+  .single-front .author-sig {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    text-align: center;
+    font-family: 'Amatic SC', cursive;
+    font-weight: 700;
+    color: var(--ink-deep);
+    font-size: clamp(34px, 6.2vw, 55px);
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(251, 246, 236, 0.8);
+    pointer-events: none;
+  }
+
+  /* Back cover single view: overlay */
+  .single-back .back-text {
+    position: absolute;
+    top: 13%;
+    left: 8%;
+    right: 8%;
+    bottom: 8%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+  }
+  .single-back .back-text p {
+    font-style: italic;
+    font-size: clamp(11px, 1.7vw, 16px);
+    line-height: 1.55;
+    color: var(--ink-deep);
+    margin-bottom: 14px;
+    text-shadow: 0 1px 4px rgba(251, 246, 236, 0.95);
+  }
+  .single-back .back-text .closing {
+    font-family: 'Amatic SC', cursive;
+    font-style: normal;
+    font-weight: 700;
+    margin-top: 22px;
+    font-size: clamp(18px, 2.5vw, 28px);
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .panel-caption {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  /* Specs block */
+  .specs-block {
+    max-width: 1400px;
+    margin: 60px auto 0;
+    background: var(--cream);
+    border-radius: 6px;
+    padding: 24px 30px;
+    box-shadow: 0 6px 16px rgba(58, 31, 16, 0.12);
+  }
+  .specs-block h3 {
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .specs-block table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .specs-block td {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(58, 31, 16, 0.08);
+  }
+  .specs-block td:first-child {
+    color: var(--ink-soft);
+    font-style: italic;
+    width: 35%;
+  }
+  .specs-block td:last-child {
+    font-weight: 500;
+  }
+  .specs-block .legend {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .specs-block .legend .red-dot {
+    display: inline-block;
+    width: 14px;
+    border-top: 1px dashed var(--bleed);
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="badge">📐 Preview Couverture KDP wrap-around · Tome 2</span>
+  <h1>Lila <em style="font-weight: 500;">et le grenier des autres</em></h1>
+  <div class="meta">Aperçu de la couverture imprimée d'un seul tenant (back + dos + front, bleed inclus)</div>
+</div>
+
+<div class="section-label">
+  Vue Wrap-Around · 18,266 × 9,222 in
+  <span class="specs">tel que ça s'imprimera et se pliera autour du livre</span>
+</div>
+
+<div class="wraparound">
+  <!-- BACK panel image -->
+  <div class="back-panel">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_102658_1b61fcdc-b4da-4d6f-8bdd-bb21ab905a52.png" alt="Back cover">
+  </div>
+
+  <!-- SPINE -->
+  <div class="spine"></div>
+
+  <!-- FRONT panel image -->
+  <div class="front-panel">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_102646_ddf6e3b6-3ec3-40d5-b517-87a242f4b737.png" alt="Front cover">
+  </div>
+
+  <!-- Trim line indicator (dashed red) -->
+  <div class="trim-zone"></div>
+
+  <!-- BACK OVERLAYS -->
+  <div class="back-synopsis-overlay">
+    <p>Lila avait sa clé en bronze.<br>Mais elle ne savait pas qu'ailleurs,<br>dans le monde, quatre autres enfants<br>gardaient aussi la leur.</p>
+    <p>D'un grenier japonais à un désert d'étoiles,<br>en passant par une savane parlante<br>et une cité cachée dans une calabaza,<br>cinq enfants découvrent qu'ils n'ont jamais été seuls.</p>
+    <div class="closing">Un conte d'amitié et de portes secrètes,<br>pour les rêveurs de 6 à 8 ans.</div>
+  </div>
+
+  <!-- FRONT OVERLAYS -->
+  <div class="front-collection">
+    <div class="label">Collection</div>
+    <div class="name">Au seuil des merveilles</div>
+  </div>
+
+  <div class="front-title">
+    <div class="main">Lila</div>
+    <div class="italic">et le grenier</div>
+    <div class="main">des autres</div>
+    <div class="subtitle">Cinq clés, cinq mondes, une grande maison</div>
+  </div>
+
+  <div class="front-author">Apolline Verger</div>
+</div>
+
+<!-- =========================== -->
+
+<div class="section-label">
+  Vue individuelle · Front + Back
+  <span class="specs">comme la couverture apparaîtra sur Amazon et entre les mains du lecteur</span>
+</div>
+
+<div class="panels-grid">
+
+  <div>
+    <div class="single-panel single-back">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_102658_1b61fcdc-b4da-4d6f-8bdd-bb21ab905a52.png" alt="Back cover">
+      <div class="back-text">
+        <p>Lila avait sa clé en bronze.<br>Mais elle ne savait pas qu'ailleurs, dans le monde,<br>quatre autres enfants gardaient aussi la leur.</p>
+        <p>D'un grenier japonais à un désert d'étoiles,<br>en passant par une savane parlante<br>et une cité cachée dans une calabaza orange,<br>cinq enfants découvrent qu'ils n'ont jamais été seuls.</p>
+        <div class="closing">Un conte d'amitié, d'aventure et de portes secrètes,<br>pour les rêveurs de 6 à 8 ans.</div>
+      </div>
+    </div>
+    <div class="panel-caption">4ᵉ de couverture</div>
+  </div>
+
+  <div>
+    <div class="single-panel single-front">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260511_102646_ddf6e3b6-3ec3-40d5-b517-87a242f4b737.png" alt="Front cover">
+      <div class="collection-tag">
+        <div class="lbl">Collection</div>
+        <div class="nm">Au seuil des merveilles</div>
+      </div>
+      <div class="title-block">
+        <div class="main">Lila</div>
+        <div class="it">et le grenier</div>
+        <div class="main">des autres</div>
+        <div class="sub">Cinq clés, cinq mondes, une grande maison</div>
+      </div>
+      <div class="author-sig">Apolline Verger</div>
+    </div>
+    <div class="panel-caption">1ʳᵉ de couverture</div>
+  </div>
+
+</div>
+
+<!-- =========================== -->
+
+<div class="specs-block">
+  <h3>📐 Spécifications techniques KDP</h3>
+  <table>
+    <tr><td>Format trim chaque panneau</td><td>8,972 × 8,972 in (22,79 × 22,79 cm)</td></tr>
+    <tr><td>Bleed</td><td>0,125 in sur les 4 bords externes</td></tr>
+    <tr><td>Spine (dos)</td><td>0,072 in (32 pages, papier blanc)</td></tr>
+    <tr><td>Dimensions totales</td><td><strong>18,266 × 9,222 in</strong> (46,40 × 23,42 cm)</td></tr>
+    <tr><td>Résolution PDF cible</td><td>228 DPI (cohérence avec intérieur)</td></tr>
+    <tr><td>Finition de couverture</td><td>Glossy (recommandée pour aquarelles)</td></tr>
+    <tr><td>Code-barres ISBN</td><td>Imprimé automatiquement par KDP en bas-droite de la 4ᵉ de couv</td></tr>
+  </table>
+  <div class="legend">
+    <span class="red-dot"></span> ligne pointillée rouge = limite de coupe (trim) · tout ce qui dépasse va dans le bleed et sera coupé à l'impression
+  </div>
+</div>
+
+</body>
+</html>
