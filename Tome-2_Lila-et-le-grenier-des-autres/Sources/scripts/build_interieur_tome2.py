@@ -1,30 +1,63 @@
 """
-Génère le PDF intérieur KDP de 'Lila et le grenier des autres' (Tome 2)
-Format : 646.016 × 646.016 pts (= 8.972" carré, format Iggy/Tome 1)
+Génère le PDF intérieur KDP de 'Lila et la clé du grenier' (Tome 2)
+VERSION 2 : avec bleed 0.125" inclus + safety zone 0.375" respectée pour le texte
+
+Specs KDP :
+- Trim : 8.972 × 8.972 in
+- Bleed : 0.125 in sur les 4 côtés
+- Canvas total PDF : 9.222 × 9.222 in (= 663.984 pts)
+- Safety zone texte : >= 0.375 in depuis bord trim (donc >= 0.5 in depuis bord PDF)
 """
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
-import io
 
 # ============================================================
-# CONSTANTES
+# CONSTANTES — DIMENSIONS KDP
 # ============================================================
 IMG_DIR = Path("/home/claude/lila_tome2")
 OUT_PDF = Path("/home/claude/lila_tome2_interieur.pdf")
 
-W = H = 2048
+# Cible en pouces
+TRIM_IN = 8.972          # taille finale visible après coupe
+BLEED_IN = 0.125         # débordement sur chaque bord
+SAFETY_IN = 0.375        # zone à respecter pour le texte depuis le bord trim
+CANVAS_IN = TRIM_IN + 2 * BLEED_IN  # 9.222"
+
+# Travail à 228 DPI (cohérent avec couverture)
+DPI = 228
+CANVAS_PX = round(CANVAS_IN * DPI)       # 2103 px
+TRIM_PX = round(TRIM_IN * DPI)            # 2046 px
+BLEED_PX = round(BLEED_IN * DPI)          # 29 px
+SAFETY_PX = round(SAFETY_IN * DPI)        # 86 px
+
+# Coordonnées clés sur le canvas (en px)
+TRIM_LEFT = BLEED_PX
+TRIM_TOP = BLEED_PX
+TRIM_RIGHT = BLEED_PX + TRIM_PX           # 2075
+TRIM_BOTTOM = BLEED_PX + TRIM_PX
+
+SAFE_LEFT = TRIM_LEFT + SAFETY_PX         # 115
+SAFE_TOP = TRIM_TOP + SAFETY_PX
+SAFE_RIGHT = TRIM_RIGHT - SAFETY_PX       # 1989
+SAFE_BOTTOM = TRIM_BOTTOM - SAFETY_PX
+SAFE_WIDTH = SAFE_RIGHT - SAFE_LEFT
 
 # Fonts
 FONT_BODY = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 FONT_BODY_ITALIC = "/usr/share/fonts/truetype/google-fonts/Lora-Italic-Variable.ttf"
 FONT_HANDWRITTEN = "/usr/local/lib/python3.12/dist-packages/font_amatic_sc/files/AmaticSC-Bold.ttf"
 
-# Couleurs
 INK = (58, 31, 16)
 INK_SOFT = (90, 53, 32)
+CREAM = (251, 246, 236)
+
+print(f"📐 Canvas total : {CANVAS_IN:.3f}\" ({CANVAS_PX}×{CANVAS_PX} px @ {DPI} DPI)")
+print(f"📐 Zone trim    : {TRIM_IN:.3f}\" ({TRIM_PX}×{TRIM_PX} px), offset {BLEED_PX} px")
+print(f"📐 Zone safety  : {SAFE_RIGHT - SAFE_LEFT} px de large, à {SAFETY_PX} px du trim")
+print()
 
 # ============================================================
-# TEXTES TOME 2 — 30 pages
+# TEXTES TOME 1
 # ============================================================
 PAGES_TEXT = {
     1:  "Au grenier de Mamie, la clé en bronze se met à trembler.\n« C'est qu'elle a senti les autres », murmure Mamie en souriant.",
@@ -60,168 +93,167 @@ PAGES_TEXT = {
 }
 
 
-def make_caption_overlay(width, height, banner_height_ratio=0.20, fade_height_ratio=0.04):
-    """Crée un bandeau crème opaque en bas avec transition douce vers l'image."""
-    overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+def make_caption_overlay(canvas_width, canvas_height, banner_top_y, banner_bottom_y, fade_px):
+    """Crée un bandeau crème opaque positionné précisément en px, avec transition douce au-dessus."""
+    overlay = Image.new("RGBA", (canvas_width, canvas_height), (0, 0, 0, 0))
     px = overlay.load()
-    cream = (251, 246, 236)
+    fade_start = banner_top_y - fade_px
 
-    banner_top = int(height * (1 - banner_height_ratio))
-    fade_top = int(banner_top - height * fade_height_ratio)
-
-    for y in range(height):
-        if y < fade_top:
+    for y in range(canvas_height):
+        if y < fade_start:
             alpha = 0
-        elif y < banner_top:
-            t = (y - fade_top) / (banner_top - fade_top)
+        elif y < banner_top_y:
+            t = (y - fade_start) / fade_px
             t = t * t * (3 - 2 * t)  # smoothstep
             alpha = int(t * 250)
-        else:
+        elif y <= banner_bottom_y:
             alpha = 250
-        for x in range(width):
-            px[x, y] = (*cream, alpha)
+        else:
+            alpha = 250  # le bandeau peut s'étendre jusqu'au bord du bleed
+        for x in range(canvas_width):
+            px[x, y] = (*CREAM, alpha)
     return overlay
 
 
-def draw_centered_text_block(draw, text, font, y_start, image_width, fill, line_spacing=1.25):
+def draw_centered_text_block(draw, text, font, y_start, x_left, x_right,
+                              fill, line_spacing=1.28):
+    """Dessine du texte centré horizontalement dans la zone [x_left, x_right]."""
     lines = text.split("\n")
-    bbox = draw.textbbox((0, 0), "Ag", font=font)
-    line_h = (bbox[3] - bbox[1])
+    bbox_ref = draw.textbbox((0, 0), "Ag", font=font)
+    line_h = bbox_ref[3] - bbox_ref[1]
     line_h_with_spacing = int(line_h * line_spacing)
-
     y = y_start
+    panel_center_x = (x_left + x_right) // 2
     for line in lines:
         bbox = draw.textbbox((0, 0), line, font=font)
         text_w = bbox[2] - bbox[0]
-        x = (image_width - text_w) // 2
+        x = panel_center_x - text_w // 2
         draw.text((x, y), line, font=font, fill=fill)
         y += line_h_with_spacing
     return y
 
 
-def render_story_page(img_path, text, page_num, out_size=W):
-    img = Image.open(img_path).convert("RGB")
-    if img.size != (out_size, out_size):
-        img = img.resize((out_size, out_size), Image.LANCZOS)
+def render_story_page(img_path, text, page_num):
+    """Rendre une page d'histoire au format canvas (avec bleed)."""
+    # 1) Charger l'image source (2048×2048)
+    img_src = Image.open(img_path).convert("RGB")
+    # 2) Redimensionner pour remplir tout le CANVAS (donc déborder dans le bleed)
+    img_src = img_src.resize((CANVAS_PX, CANVAS_PX), Image.LANCZOS)
 
-    # Bandeau crème en bas
-    overlay = make_caption_overlay(out_size, out_size,
-                                    banner_height_ratio=0.20,
-                                    fade_height_ratio=0.04)
-    img = img.convert("RGBA")
-    img = Image.alpha_composite(img, overlay)
-    img = img.convert("RGB")
+    # 3) Le bandeau crème occupe la partie basse, SE TERMINANT à TRIM_BOTTOM pour respecter safety
+    # Le bandeau doit occuper environ 20% de la hauteur du trim
+    banner_height_px = round(0.22 * TRIM_PX)
+    banner_top_y = TRIM_BOTTOM - banner_height_px
+    banner_bottom_y = CANVAS_PX  # va jusqu'au bord du PDF (dans le bleed)
+    fade_px = round(0.04 * TRIM_PX)
 
-    draw = ImageDraw.Draw(img)
+    overlay = make_caption_overlay(CANVAS_PX, CANVAS_PX,
+                                    banner_top_y, banner_bottom_y, fade_px)
+    canvas = img_src.convert("RGBA")
+    canvas = Image.alpha_composite(canvas, overlay)
+    canvas = canvas.convert("RGB")
+
+    draw = ImageDraw.Draw(canvas)
+
+    # 4) Texte de l'histoire : DANS LA SAFETY ZONE
+    # Police 56 pt à 228 DPI ~ 178 px de haut
     font_caption = ImageFont.truetype(FONT_BODY, 56)
     font_caption.set_variation_by_axes([600])
 
+    # On centre verticalement le texte dans le bandeau
     n_lines = len(text.split("\n"))
-    text_block_h = n_lines * 72
-    text_y_start = int(out_size * 0.89) - text_block_h // 2
-    draw_centered_text_block(draw, text, font_caption, text_y_start, out_size,
+    line_h_total = n_lines * round(56 * 1.28 * (DPI / 72))  # estimation
+    # Centre vertical du bandeau visible (au-dessus du bord trim)
+    banner_visible_center_y = (banner_top_y + TRIM_BOTTOM) // 2
+
+    text_y_start = banner_visible_center_y - line_h_total // 2 - 30
+    # Mais on s'assure de rester DANS la safety zone
+    text_y_start = max(text_y_start, banner_top_y + 30)
+
+    draw_centered_text_block(draw, text, font_caption,
+                              text_y_start,
+                              SAFE_LEFT, SAFE_RIGHT,
                               fill=INK, line_spacing=1.28)
 
-    # Numéro de page
+    # 5) Numéro de page : à l'intérieur de la safety zone, en bas à droite
     font_pagenum = ImageFont.truetype(FONT_BODY_ITALIC, 28)
     page_label = str(page_num)
     bbox = draw.textbbox((0, 0), page_label, font=font_pagenum)
     pw = bbox[2] - bbox[0]
-    draw.text((out_size - pw - 80, out_size - 55), page_label,
-              font=font_pagenum, fill=INK_SOFT)
+    # Position : à SAFE_RIGHT, à 30 px de SAFE_BOTTOM
+    draw.text((SAFE_RIGHT - pw, SAFE_BOTTOM - 35),
+              page_label, font=font_pagenum, fill=INK_SOFT)
 
-    return img
+    return canvas
 
 
-def render_title_page(out_size=W):
-    img = Image.new("RGB", (out_size, out_size), (251, 246, 236))
+def render_blank_canvas():
+    """Canvas crème uni avec bleed."""
+    return Image.new("RGB", (CANVAS_PX, CANVAS_PX), CREAM)
+
+
+def render_title_page():
+    """Page de titre, texte dans safety zone."""
+    img = render_blank_canvas()
     draw = ImageDraw.Draw(img)
 
-    # Ornement haut
+    # Ornement
     def draw_ornament(y_center):
-        line_color = INK_SOFT
-        center_x = out_size // 2
-        line_w = 80
-        gap = 30
-        thickness = 4
+        cx = CANVAS_PX // 2
+        line_w, gap, thickness = 80, 30, 4
         for offset in [-1, 0, 1]:
-            x_start = center_x + offset * (line_w + gap) - line_w // 2
+            x_start = cx + offset * (line_w + gap) - line_w // 2
             draw.rectangle([x_start, y_center - thickness // 2,
                             x_start + line_w, y_center + thickness // 2],
-                           fill=line_color)
+                           fill=INK_SOFT)
 
-    # Petite intro
+    # Calculs verticaux : on travaille dans la safety zone
+    inner_h = SAFE_BOTTOM - SAFE_TOP
+
+    # Intro
     f_intro = ImageFont.truetype(FONT_BODY_ITALIC, 52)
     f_intro.set_variation_by_axes([450])
     intro = "Une histoire à lire le soir,\nquand on a très envie de voyager"
     draw_centered_text_block(draw, intro, f_intro,
-                              int(out_size * 0.12), out_size, INK_SOFT, 1.3)
+                              SAFE_TOP + round(inner_h * 0.10),
+                              SAFE_LEFT, SAFE_RIGHT, INK_SOFT, 1.3)
 
-    draw_ornament(int(out_size * 0.26))
+    draw_ornament(SAFE_TOP + round(inner_h * 0.27))
 
-    # Titre central
+    # Titre principal
     f_title_main = ImageFont.truetype(FONT_BODY, 160)
     f_title_main.set_variation_by_axes([600])
     f_title_it = ImageFont.truetype(FONT_BODY_ITALIC, 105)
     f_title_it.set_variation_by_axes([500])
 
-    panel_center = out_size // 2
-    y = int(out_size * 0.32)
+    panel_center = CANVAS_PX // 2
+    y = SAFE_TOP + round(inner_h * 0.33)
 
-    # Ligne 1 : Lila
     bbox = draw.textbbox((0, 0), "Lila", font=f_title_main)
     tw = bbox[2] - bbox[0]
     draw.text((panel_center - tw // 2, y), "Lila", font=f_title_main, fill=INK)
-    y += int(out_size * 0.10)
+    y += round(inner_h * 0.11)
 
-    # Ligne 2 : et le grenier (italique)
-    bbox = draw.textbbox((0, 0), "et le grenier", font=f_title_it)
+    bbox = draw.textbbox((0, 0), "et le grenier des autres", font=f_title_it)
     tw = bbox[2] - bbox[0]
-    draw.text((panel_center - tw // 2, y), "et le grenier", font=f_title_it, fill=INK_SOFT)
-    y += int(out_size * 0.075)
+    draw.text((panel_center - tw // 2, y), "et le grenier des autres",
+              font=f_title_it, fill=INK_SOFT)
 
-    # Ligne 3 : des autres
-    bbox = draw.textbbox((0, 0), "des autres", font=f_title_main)
-    tw = bbox[2] - bbox[0]
-    draw.text((panel_center - tw // 2, y), "des autres", font=f_title_main, fill=INK)
-
-    # Ornement bas
-    draw_ornament(int(out_size * 0.78))
+    draw_ornament(SAFE_TOP + round(inner_h * 0.78))
 
     # Audience
     f_aud = ImageFont.truetype(FONT_BODY_ITALIC, 52)
     f_aud.set_variation_by_axes([450])
     aud = "Pour les petits explorateurs\nde 6 à 8 ans"
     draw_centered_text_block(draw, aud, f_aud,
-                              int(out_size * 0.86), out_size, INK_SOFT, 1.3)
+                              SAFE_TOP + round(inner_h * 0.85),
+                              SAFE_LEFT, SAFE_RIGHT, INK_SOFT, 1.3)
 
     return img
 
 
-def render_end_page(out_size=W):
-    img = Image.new("RGB", (out_size, out_size), (251, 246, 236))
-    draw = ImageDraw.Draw(img)
-
-    f_fin = ImageFont.truetype(FONT_BODY, 280)
-    f_fin.set_variation_by_axes([600])
-    fin = "Fin"
-    bbox = draw.textbbox((0, 0), fin, font=f_fin)
-    fw = bbox[2] - bbox[0]
-    fh = bbox[3] - bbox[1]
-    draw.text(((out_size - fw) // 2, int(out_size * 0.34) - fh // 2),
-              fin, font=f_fin, fill=INK)
-
-    # Phrase finale en italique
-    f_final = ImageFont.truetype(FONT_BODY_ITALIC, 60)
-    f_final.set_variation_by_axes([450])
-    final_text = "… mais les cinq clés restent là,\nchacune au fond de son coffre,\nprêtes pour la prochaine aventure."
-    draw_centered_text_block(draw, final_text, f_final,
-                              int(out_size * 0.56), out_size, INK_SOFT, 1.4)
-    return img
-
-
-def render_copyright_page(out_size=W):
-    img = Image.new("RGB", (out_size, out_size), (251, 246, 236))
+def render_copyright_page():
+    img = render_blank_canvas()
     draw = ImageDraw.Draw(img)
 
     f_title = ImageFont.truetype(FONT_BODY, 56)
@@ -231,26 +263,23 @@ def render_copyright_page(out_size=W):
     f_body_it = ImageFont.truetype(FONT_BODY_ITALIC, 44)
     f_body_it.set_variation_by_axes([400])
 
-    y = int(out_size * 0.22)
+    inner_h = SAFE_BOTTOM - SAFE_TOP
+    y = SAFE_TOP + round(inner_h * 0.20)
 
-    title = "Lila et le grenier des autres"
-    bbox = draw.textbbox((0, 0), title, font=f_title)
-    draw.text(((out_size - (bbox[2] - bbox[0])) // 2, y),
-              title, font=f_title, fill=INK)
+    def center_text(text, font, y_pos, fill):
+        bbox = draw.textbbox((0, 0), text, font=font)
+        draw.text(((CANVAS_PX - (bbox[2] - bbox[0])) // 2, y_pos),
+                  text, font=font, fill=fill)
+
+    center_text("Lila et le grenier des autres", f_title, y, INK)
     y += 100
-
-    auteur = "Apolline Verger"
-    bbox = draw.textbbox((0, 0), auteur, font=f_body_it)
-    draw.text(((out_size - (bbox[2] - bbox[0])) // 2, y),
-              auteur, font=f_body_it, fill=INK_SOFT)
+    center_text("Apolline Verger", f_body_it, y, INK_SOFT)
     y += 180
 
     f_small = ImageFont.truetype(FONT_BODY, 38)
     f_small.set_variation_by_axes([400])
-    coll = "Collection « Au seuil des merveilles » · Tome 2"
-    bbox = draw.textbbox((0, 0), coll, font=f_small)
-    draw.text(((out_size - (bbox[2] - bbox[0])) // 2, y),
-              coll, font=f_small, fill=INK_SOFT)
+    center_text("Collection « Au seuil des merveilles » · Tome 2",
+                f_small, y, INK_SOFT)
     y += 220
 
     mentions = [
@@ -268,23 +297,43 @@ def render_copyright_page(out_size=W):
         if not text:
             y += 36
             continue
-        bbox = draw.textbbox((0, 0), text, font=font)
-        draw.text(((out_size - (bbox[2] - bbox[0])) // 2, y),
-                  text, font=font, fill=INK_SOFT)
+        center_text(text, font, y, INK_SOFT)
         y += 56
 
+    return img
+
+
+def render_end_page():
+    img = render_blank_canvas()
+    draw = ImageDraw.Draw(img)
+    inner_h = SAFE_BOTTOM - SAFE_TOP
+
+    f_fin = ImageFont.truetype(FONT_BODY, 280)
+    f_fin.set_variation_by_axes([600])
+    fin = "Fin"
+    bbox = draw.textbbox((0, 0), fin, font=f_fin)
+    fw = bbox[2] - bbox[0]
+    fh = bbox[3] - bbox[1]
+    draw.text(((CANVAS_PX - fw) // 2,
+               SAFE_TOP + round(inner_h * 0.32) - fh // 2),
+              fin, font=f_fin, fill=INK)
+
+    f_final = ImageFont.truetype(FONT_BODY_ITALIC, 60)
+    f_final.set_variation_by_axes([450])
+    final_text = "… mais les cinq clés restent là,\nchacune au fond de son coffre,\nprêtes pour la prochaine aventure."
+    draw_centered_text_block(draw, final_text, f_final,
+                              SAFE_TOP + round(inner_h * 0.56),
+                              SAFE_LEFT, SAFE_RIGHT, INK_SOFT, 1.4)
     return img
 
 
 # ============================================================
 # BUILD PDF
 # ============================================================
-print("📖 Génération du PDF intérieur 'Lila et le grenier des autres' (Tome 2)…")
-print(f"   Format cible : 8.972\" × 8.972\" carré")
+print(f"📖 Génération du PDF intérieur 'Lila et le grenier des autres' (Tome 2) V2")
 print()
 
 pages = []
-
 print("  → Page de titre")
 pages.append(render_title_page())
 
@@ -293,28 +342,18 @@ pages.append(render_copyright_page())
 
 for p in range(1, 31):
     print(f"  → Page {p:02d}")
-    pages.append(render_story_page(
-        IMG_DIR / f"p{p:02d}.png",
-        PAGES_TEXT[p],
-        p,
-    ))
+    pages.append(render_story_page(IMG_DIR / f"p{p:02d}.png", PAGES_TEXT[p], p))
 
 print("  → Page Fin")
 pages.append(render_end_page())
 
-DPI = 2048 / 8.972
-
 print()
-print(f"💾 Écriture PDF (DPI effectif : {DPI:.1f})…")
-pages[0].save(
-    OUT_PDF,
-    save_all=True,
-    append_images=pages[1:],
-    format="PDF",
-    resolution=DPI,
-)
+print(f"💾 Écriture PDF…")
+pages[0].save(OUT_PDF, save_all=True, append_images=pages[1:],
+              format="PDF", resolution=DPI)
 
 import os
-print(f"✓ PDF intérieur sauvegardé : {OUT_PDF}")
-print(f"  Nombre de pages : {len(pages)}")
+print(f"✓ PDF intérieur Tome 2 sauvegardé : {OUT_PDF}")
+print(f"  Pages : {len(pages)}")
 print(f"  Taille : {os.path.getsize(OUT_PDF) / 1024 / 1024:.1f} MB")
+print(f"  Format : {CANVAS_IN:.3f}\" × {CANVAS_IN:.3f}\" (bleed 0.125\" inclus)")

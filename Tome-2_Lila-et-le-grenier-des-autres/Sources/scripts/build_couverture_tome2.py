@@ -136,7 +136,7 @@ canvas = canvas.convert("RGBA")
 print("→ Textes back panel")
 
 # Halo synopsis
-synopsis_box_w = TRIM_W_PX - in2px(0.8)
+synopsis_box_w = TRIM_W_PX - in2px(1.0)
 synopsis_box_h = in2px(4.5)
 synopsis_x = BACK_X_TRIM_START + (TRIM_W_PX - synopsis_box_w) // 2
 synopsis_y = Y_TRIM_TOP + in2px(1.2)
@@ -171,7 +171,7 @@ draw_centered_text_block(
 f_closing = ImageFont.truetype(FONT_HANDWRITTEN, 92)
 closing_text = "Un conte d'amitié et de portes secrètes,\npour les rêveurs de 6 à 8 ans."
 closing_y = synopsis_y + synopsis_box_h - in2px(0.5)
-closing_halo_w = in2px(7)
+closing_halo_w = in2px(6.5)
 closing_halo_h = in2px(1.7)
 closing_halo_x = BACK_X_TRIM_START + (TRIM_W_PX - closing_halo_w) // 2
 closing_halo = make_ellipse_halo(closing_halo_w, closing_halo_h,
@@ -217,8 +217,8 @@ f_collection_name.set_variation_by_axes([500])
 
 coll_halo_w = in2px(2.8)
 coll_halo_h = in2px(0.7)
-coll_halo_x = FRONT_X_TRIM_END - coll_halo_w - in2px(0.25)
-coll_halo_y = Y_TRIM_TOP + in2px(0.25)
+coll_halo_x = FRONT_X_TRIM_END - coll_halo_w - in2px(0.5)
+coll_halo_y = Y_TRIM_TOP + in2px(0.5)
 coll_halo = make_ellipse_halo(coll_halo_w, coll_halo_h, opacity_center=0.82)
 canvas.paste(coll_halo, (coll_halo_x, coll_halo_y), coll_halo)
 draw = ImageDraw.Draw(canvas)
@@ -227,17 +227,17 @@ label = "COLLECTION"
 labeled = " ".join(label)
 bbox2 = draw.textbbox((0, 0), labeled, font=f_collection_label)
 lw2 = bbox2[2] - bbox2[0]
-draw.text((coll_halo_x + coll_halo_w - lw2 - in2px(0.25), coll_halo_y + in2px(0.15)),
+draw.text((coll_halo_x + coll_halo_w - lw2 - in2px(0.15), coll_halo_y + in2px(0.15)),
           labeled, font=f_collection_label, fill=INK_DEEP)
 
 coll_name = "Au seuil des merveilles"
 bbox = draw.textbbox((0, 0), coll_name, font=f_collection_name)
 nw = bbox[2] - bbox[0]
-draw.text((coll_halo_x + coll_halo_w - nw - in2px(0.25), coll_halo_y + in2px(0.30)),
+draw.text((coll_halo_x + coll_halo_w - nw - in2px(0.15), coll_halo_y + in2px(0.30)),
           coll_name, font=f_collection_name, fill=INK_DEEP)
 
 # Titre principal centré
-title_halo_w = TRIM_W_PX - in2px(0.6)
+title_halo_w = TRIM_W_PX - in2px(1.0)
 title_halo_h = in2px(3.5)
 title_halo_x = FRONT_X_TRIM_START + (TRIM_W_PX - title_halo_w) // 2
 title_halo_y = Y_TRIM_TOP + in2px(1.1)
@@ -272,7 +272,7 @@ draw.text((panel_center - tw // 2, y), "des autres", font=f_title_main, fill=INK
 y += in2px(1.1)
 
 # Sous-titre
-sub_halo_w = in2px(7)
+sub_halo_w = in2px(6.5)
 sub_halo_h = in2px(0.8)
 sub_halo_x = FRONT_X_TRIM_START + (TRIM_W_PX - sub_halo_w) // 2
 sub_halo_y = y - in2px(0.1)
@@ -289,7 +289,7 @@ draw.text((panel_center - tw // 2, sub_halo_y + in2px(0.18)),
           sub_text, font=f_subtitle, fill=INK_DEEP)
 
 # Auteur en bas du front
-author_front_y = Y_TRIM_BOTTOM - in2px(0.85)
+author_front_y = Y_TRIM_BOTTOM - in2px(1.1)
 author_halo_front_w = in2px(5.5)
 author_halo_front_h = in2px(1.0)
 author_halo_front_x = FRONT_X_TRIM_START + (TRIM_W_PX - author_halo_front_w) // 2
