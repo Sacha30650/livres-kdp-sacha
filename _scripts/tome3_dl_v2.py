@@ -57,9 +57,12 @@ def gh_put(path, content_bytes, message):
     req.add_header('Content-Type', 'application/json')
     try:
         with urllib.request.urlopen(req) as resp:
-            return resp.status
+            return 'HTTP ' + str(resp.status)
     except urllib.error.HTTPError as e:
-        return 'ERR ' + str(e.code) + ' ' + e.read().decode()[:200]
+        body = e.read().decode()[:300]
+        return 'HTTP ' + str(e.code) + ' BODY=' + body
+    except Exception as e:
+        return 'EXC ' + str(e)[:200]
 
 
 print('Telechargement et upload des 32 images vers GitHub...')
