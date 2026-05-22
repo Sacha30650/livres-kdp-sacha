@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notre première année à 3 — Partie 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FCF6EA;
+    --cream-deep:#F6EAD4;
+    --paper-edge:#EFE0C6;
+    --peach:#EFB48C;
+    --peach-wash:#FBE7D6;
+    --pink:#E7B9BD;
+    --sage:#A4B391;
+    --sage-wash:#E7EBDD;
+    --ink:#4B3A30;
+    --ink-soft:#6E5A4C;
+    --ink-faint:#A28D7A;
+    --display:'Fraunces',Georgia,serif;
+    --body:'Newsreader',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--body);
+    color:var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, #DDE0CC 0%, transparent 60%),
+      linear-gradient(180deg,#CDD2BC 0%,#C4BBA8 50%,#C9BFA9 100%);
+    background-attachment:fixed;
+    padding:48px 16px 90px;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/></svg>");
+    opacity:.045;mix-blend-mode:multiply;
+  }
+
+  .masthead{max-width:720px;margin:0 auto 30px;text-align:center;position:relative;z-index:1;}
+  .masthead .kicker{
+    font-family:var(--display);font-size:.72rem;letter-spacing:.32em;
+    text-transform:uppercase;color:#6a6553;font-weight:500;
+  }
+  .masthead .mh-title{
+    font-family:var(--display);font-weight:500;font-size:1.18rem;
+    color:#4f4a3c;margin-top:6px;font-style:italic;
+  }
+
+  .book{max-width:720px;margin:0 auto;position:relative;z-index:1;}
+  .page{
+    background:var(--cream);border-radius:5px;margin-bottom:34px;
+    box-shadow:0 1px 0 var(--paper-edge),0 2px 2px rgba(60,45,30,.10),0 18px 40px -16px rgba(50,38,26,.45);
+    overflow:hidden;position:relative;
+  }
+  .page-inner{padding:46px 52px 54px;}
+
+  .band{
+    display:flex;align-items:center;gap:14px;padding:14px 24px;
+    background:linear-gradient(90deg,var(--sage-wash),var(--peach-wash));
+    border-bottom:1px solid #EADBBE;
+  }
+  .band-hero{
+    width:50px;height:50px;border-radius:50%;flex:none;
+    background:var(--cream-deep) center/cover no-repeat;
+    box-shadow:0 0 0 3px #fff,0 2px 6px rgba(60,45,30,.25);
+  }
+  .band-label{font-family:var(--display);}
+  .band-label .p{
+    font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;
+    color:#8a7a5f;font-weight:500;
+  }
+  .band-label .c{font-size:1.02rem;color:var(--ink);font-style:italic;margin-top:1px;}
+  .band-folio{margin-left:auto;font-family:var(--display);font-size:.8rem;color:#a99a7e;}
+
+  .opening .page-inner{padding:0;}
+  .opening-img{
+    width:100%;display:block;aspect-ratio:3/2.05;object-fit:cover;background:var(--peach-wash);
+  }
+  .opening-body{padding:40px 52px 50px;text-align:center;}
+  .part-tag{
+    font-family:var(--display);font-size:.74rem;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--peach);font-weight:600;
+  }
+  .part-rule{width:46px;height:2px;background:var(--peach);margin:14px auto 18px;border-radius:2px;}
+  .part-title{
+    font-family:var(--display);font-weight:500;font-size:2.55rem;
+    line-height:1.1;color:var(--ink);
+  }
+  .part-sub{
+    font-family:var(--display);font-style:italic;font-size:1rem;
+    color:var(--ink-soft);margin-top:8px;
+  }
+  .opening-text{margin-top:26px;text-align:left;font-size:1.12rem;line-height:1.78;color:var(--ink-soft);}
+  .opening-text p{margin-bottom:14px;}
+  .opening-text p:first-child::first-letter{
+    font-family:var(--display);font-size:3.2rem;line-height:.8;float:left;
+    margin:6px 10px 0 0;color:var(--peach);font-weight:500;
+  }
+
+  .chap-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+  .chap-num{
+    flex:none;font-family:var(--display);font-weight:600;font-size:.92rem;
+    color:#fff;background:var(--peach);width:46px;height:46px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 8px rgba(214,140,90,.4);
+  }
+  .chap-title{
+    font-family:var(--display);font-weight:500;font-size:1.6rem;
+    line-height:1.18;color:var(--ink);
+  }
+  p.body{font-size:1.075rem;line-height:1.78;color:var(--ink-soft);margin-bottom:16px;}
+
+  figure.illus{margin:22px 0;}
+  figure.illus img{
+    width:100%;display:block;border-radius:8px;
+    aspect-ratio:4/3;object-fit:cover;background:var(--sage-wash);
+    box-shadow:0 6px 18px -8px rgba(60,45,30,.5);
+  }
+  figure.illus.tall img{aspect-ratio:3/2;}
+  .illus-cap{
+    margin-top:10px;padding:12px 18px;background:var(--cream-deep);
+    border-radius:8px;border-left:4px solid var(--sage);
+  }
+  .illus-cap .ct{
+    font-family:var(--display);font-style:italic;font-weight:500;
+    font-size:1rem;color:var(--ink);
+  }
+  .illus-cap .cd{font-size:.96rem;line-height:1.6;color:var(--ink-soft);margin-top:3px;}
+
+  .box{border-radius:12px;padding:18px 22px;margin:22px 0;}
+  .box .bx-label{
+    font-family:var(--display);font-weight:600;font-size:.78rem;
+    letter-spacing:.12em;text-transform:uppercase;display:flex;
+    align-items:center;gap:8px;margin-bottom:6px;
+  }
+  .box p{font-size:1rem;line-height:1.68;color:var(--ink);}
+  .box .ic{font-size:1.05rem;}
+  .box--retenir{background:var(--peach-wash);border:1px solid #F0CBA9;}
+  .box--retenir .bx-label{color:#C0764A;}
+  .box--pro{background:var(--sage-wash);border:1px solid #CBD4B6;}
+  .box--pro .bx-label{color:#6F7E54;}
+
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0;}
+  .tc{background:var(--cream-deep);border-radius:10px;padding:16px 18px;border-top:3px solid var(--pink);}
+  .tc:last-child{border-top-color:var(--sage);}
+  .tc h4{
+    font-family:var(--display);font-style:italic;font-weight:500;
+    font-size:1.02rem;color:var(--ink);margin-bottom:8px;
+  }
+  .tc ul{list-style:none;}
+  .tc li{
+    font-size:.95rem;line-height:1.5;color:var(--ink-soft);
+    padding-left:16px;position:relative;margin-bottom:5px;
+  }
+  .tc li::before{
+    content:"";position:absolute;left:0;top:.55em;
+    width:6px;height:6px;border-radius:50%;background:var(--peach);
+  }
+
+  .checklist{margin:8px 0 4px;}
+  .check{
+    display:flex;gap:13px;align-items:flex-start;padding:11px 14px;margin-bottom:8px;
+    background:var(--cream-deep);border-radius:9px;cursor:pointer;
+    transition:background .18s,transform .12s;
+  }
+  .check:hover{background:#F1E3C8;}
+  .check:active{transform:scale(.995);}
+  .tick{
+    flex:none;width:24px;height:24px;border-radius:7px;
+    border:2px solid var(--sage);background:#fff;
+    display:flex;align-items:center;justify-content:center;margin-top:1px;
+    transition:background .18s,border-color .18s;
+  }
+  .tick svg{width:13px;height:13px;opacity:0;transition:opacity .15s;}
+  .check[aria-checked="true"] .tick{background:var(--sage);border-color:var(--sage);}
+  .check[aria-checked="true"] .tick svg{opacity:1;}
+  .check[aria-checked="true"] .ck-text{color:var(--ink-faint);text-decoration:line-through;}
+  .ck-text{font-size:1.02rem;line-height:1.5;color:var(--ink);padding-top:1px;}
+
+  .cl-group{margin:18px 0;}
+  .cl-group h4{
+    font-family:var(--display);font-style:italic;font-weight:600;
+    font-size:1.12rem;color:var(--ink);margin-bottom:10px;
+    display:flex;align-items:center;gap:9px;
+  }
+  .cl-group h4::before{content:"";width:22px;height:2px;background:var(--peach);border-radius:2px;}
+
+  .cl-banner{
+    text-align:center;font-family:var(--display);font-style:italic;
+    font-size:1.16rem;color:var(--ink);background:var(--peach-wash);
+    padding:16px 22px;border-radius:11px;margin-bottom:20px;border:1px solid #F0CBA9;
+  }
+  .cl-foot{
+    font-size:1rem;line-height:1.7;color:var(--ink-soft);
+    margin-top:14px;font-style:italic;text-align:center;
+  }
+
+  .lead-quote{
+    font-family:var(--display);font-style:italic;font-size:1.14rem;
+    line-height:1.62;color:var(--ink);
+    border-left:3px solid var(--pink);padding:4px 0 4px 20px;margin:6px 0 20px;
+  }
+
+  .endnote{
+    max-width:720px;margin:8px auto 0;text-align:center;
+    font-family:var(--display);font-style:italic;color:#5f5a48;
+    font-size:.95rem;position:relative;z-index:1;
+  }
+
+  .reveal{opacity:0;transform:translateY(16px);}
+  .reveal.in{
+    opacity:1;transform:none;
+    transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+
+  @media(max-width:560px){
+    body{padding:26px 8px 70px;}
+    .page-inner{padding:32px 24px 38px;}
+    .opening-body{padding:30px 26px 36px;}
+    .part-title{font-size:2rem;}
+    .twocol{grid-template-columns:1fr;}
+    .band{padding:12px 18px;}
+    .chap-title{font-size:1.36rem;}
+  }
+
+  @media print{
+    body{background:#fff;padding:0;}
+    body::before{display:none;}
+    .masthead,.endnote{display:none;}
+    .page{box-shadow:none;margin:0;border-radius:0;page-break-after:always;}
+    .reveal{opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="kicker">Guide de parentalité · épreuve couleur</div>
+  <div class="mh-title">« Notre première année à 3 » — Partie 1</div>
+</div>
+
+<main class="book">
+
+  <!-- PAGE 1 — OUVERTURE -->
+  <section class="page opening reveal">
+    <img class="opening-img" alt="Un couple qui attend un enfant, dans un intérieur chaleureux"
+         src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_194106_5a29bed5-5fe4-4b4d-abed-16a2778aca29.png">
+    <div class="opening-body">
+      <div class="part-tag">Partie 1</div>
+      <div class="part-rule"></div>
+      <h1 class="part-title">On y est presque</h1>
+      <div class="part-sub">Du dernier trimestre au jour J</div>
+      <div class="opening-text">
+        <p>Vous y êtes presque. Plus que quelques semaines — peut-être quelques jours — et cette petite personne dont vous parlez depuis des mois sera là, pour de vrai.</p>
+        <p>C'est vertigineux. On a hâte, on a peur, on se sent prêt le matin et complètement dépassé le soir. Tout ça en même temps, c'est normal. Personne n'arrive « fin prêt » à l'arrivée d'un bébé — on arrive <em>en chemin</em>, et c'est très bien comme ça.</p>
+        <p>Cette première partie n'est pas une liste d'obligations. C'est une boîte à outils dans laquelle vous piochez ce qui vous rassure, à votre rythme. Rien ici n'est un examen. On respire, et on y va ensemble.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 2 — 1.1 -->
+  <section class="page reveal">
+    <div class="band">
+      <span class="band-hero" style="background-image:url('https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_191415_149e129d-cc37-4e1e-a730-246e87824598.jpeg')"></span>
+      <span class="band-label"><span class="p">Partie 1 · On y est presque</span><span class="c">Préparer son arrivée</span></span>
+      <span class="band-folio">— 1 —</span>
+    </div>
+    <div class="page-inner">
+      <div class="chap-head">
+        <span class="chap-num">1.1</span>
+        <h2 class="chap-title">Préparer le nid (sans vider votre compte en banque)</h2>
+      </div>
+      <p class="body">L'industrie de la puériculture est très douée pour vous faire croire qu'il vous faut trois cents objets. La vérité, plus tranquille, c'est qu'un nouveau-né a besoin de très peu : être nourri, être au chaud, dormir en sécurité, et être aimé. Le reste, c'est du confort — utile parfois, superflu souvent.</p>
+
+      <figure class="illus">
+        <img alt="L'essentiel du matériel pour accueillir un bébé"
+             src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_194112_d5116ae4-3303-46f5-89af-7598123b12c1.png">
+        <figcaption class="illus-cap">
+          <div class="ct">L'essentiel, vraiment</div>
+          <div class="cd">Un coin pour dormir, de quoi le changer, de quoi le nourrir, quelques vêtements, de quoi le transporter. On peut tout compléter après la naissance : les magasins ne ferment pas.</div>
+        </figcaption>
+      </figure>
+
+      <p class="body">Un repère qui détend : beaucoup de parents rachètent après coup ce qu'ils pensaient indispensable, et ne touchent jamais à la moitié de la « liste de naissance idéale ». Vous ajusterez en rencontrant votre bébé. Lui seul vous dira ce dont il a besoin.</p>
+
+      <div class="box box--retenir">
+        <div class="bx-label"><span class="ic">💛</span> À retenir</div>
+        <p>Vous n'avez pas à tout avoir. Vous avez juste à avoir de quoi commencer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3 — 1.2 -->
+  <section class="page reveal">
+    <div class="band">
+      <span class="band-hero" style="background-image:url('https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_191415_149e129d-cc37-4e1e-a730-246e87824598.jpeg')"></span>
+      <span class="band-label"><span class="p">Partie 1 · On y est presque</span><span class="c">Préparer son arrivée</span></span>
+      <span class="band-folio">— 2 —</span>
+    </div>
+    <div class="page-inner">
+      <div class="chap-head">
+        <span class="chap-num">1.2</span>
+        <h2 class="chap-title">La chambre et le coin sommeil</h2>
+      </div>
+      <p class="body">Que bébé ait sa chambre ou dorme dans la vôtre les premiers mois, l'idée est la même : un endroit calme, à température modérée, sans superflu autour du couchage.</p>
+
+      <figure class="illus">
+        <img alt="Un coin sommeil simple et apaisant"
+             src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_194118_3a45aacf-3254-4779-96ef-022e512741da.png">
+        <figcaption class="illus-cap">
+          <div class="ct">Un coin sommeil serein</div>
+          <div class="cd">Un espace de couchage dégagé, une ambiance calme, une température douce dans la pièce.</div>
+        </figcaption>
+      </figure>
+
+      <div class="box box--pro">
+        <div class="bx-label"><span class="ic">⚠️</span> Ce qui relève du professionnel</div>
+        <p>L'aménagement du couchage et les recommandations de sécurité du sommeil évoluent et sont précises. Demandez à votre sage-femme, votre pédiatre ou à la PMI les consignes à jour : ce sont les bonnes sources, et elles répondront à vos questions sans vous juger.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 4 — 1.3 -->
+  <section class="page reveal">
+    <div class="band">
+      <span class="band-hero" style="background-image:url('https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_191415_149e129d-cc37-4e1e-a730-246e87824598.jpeg')"></span>
+      <span class="band-label"><span class="p">Partie 1 · On y est presque</span><span class="c">Préparer son arrivée</span></span>
+      <span class="band-folio">— 3 —</span>
+    </div>
+    <div class="page-inner">
+      <div class="chap-head">
+        <span class="chap-num">1.3</span>
+        <h2 class="chap-title">La valise de maternité</h2>
+      </div>
+      <p class="body">Préparée vers la fin du parcours, posée près de la porte, elle transforme un départ stressant en simple geste. On la prépare en trois temps : <strong>pour vous, pour bébé, pour le co-parent.</strong></p>
+
+      <figure class="illus">
+        <img alt="Une valise de maternité préparée près de la porte"
+             src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_194125_7e93ac18-0fc3-4886-921d-18746b015ae3.png">
+      </figure>
+
+      <div class="twocol" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="tc">
+          <h4>Pour le parent qui accouche</h4>
+          <ul>
+            <li>Des tenues confortables</li>
+            <li>Les affaires de toilette</li>
+            <li>De quoi s'occuper pendant les temps d'attente</li>
+            <li>Les documents administratifs et médicaux</li>
+          </ul>
+        </div>
+        <div class="tc">
+          <h4>Pour bébé</h4>
+          <ul>
+            <li>Des tenues selon la saison</li>
+            <li>De quoi le couvrir</li>
+            <li>La tenue du retour à la maison</li>
+          </ul>
+        </div>
+        <div class="tc">
+          <h4>Pour le co-parent</h4>
+          <ul>
+            <li>Un peu de change</li>
+            <li>De quoi manger</li>
+            <li>Un chargeur</li>
+            <li>De quoi tenir quelques heures, voire une nuit</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="box box--retenir">
+        <div class="bx-label"><span class="ic">💛</span> À retenir</div>
+        <p>Une valise « presque prête » à l'avance vaut mieux qu'une valise parfaite faite dans la panique.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 5 — 1.4 -->
+  <section class="page reveal">
+    <div class="band">
+      <span class="band-hero" style="background-image:url('https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_191415_149e129d-cc37-4e1e-a730-246e87824598.jpeg')"></span>
+      <span class="band-label"><span class="p">Partie 1 · On y est presque</span><span class="c">Préparer son arrivée</span></span>
+      <span class="band-folio">— 4 —</span>
+    </div>
+    <div class="page-inner">
+      <div class="chap-head">
+        <span class="chap-num">1.4</span>
+        <h2 class="chap-title">Les démarches administratives</h2>
+      </div>
+      <p class="body">Personne n'aime cette partie. La bonne nouvelle : la plupart des démarches se font <em>après</em> la naissance, et beaucoup de structures vous accompagnent. Le but ici n'est pas de tout régler maintenant — c'est de <strong>savoir ce qui vous attend</strong> pour ne pas être pris au dépourvu.</p>
+
+      <figure class="illus">
+        <img alt="Les démarches administratives, illustrées de façon légère"
+             src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_194132_1cf9e5dd-6ed0-4c1d-8dfd-ece3d910aeac.png">
+        <figcaption class="illus-cap">
+          <div class="ct">Ce qui se prépare avant / ce qui se fera après</div>
+        </figcaption>
+      </figure>
+
+      <div class="twocol">
+        <div class="tc">
+          <h4>Ce qui se prépare avant</h4>
+          <ul>
+            <li>Repérer les démarches qui vous concernent</li>
+            <li>Rassembler les papiers utiles au même endroit</li>
+            <li>Noter les contacts : maternité, mairie, caisse d'allocations</li>
+          </ul>
+        </div>
+        <div class="tc">
+          <h4>Ce qui se fera après</h4>
+          <ul>
+            <li>La déclaration de naissance</li>
+            <li>L'ajout de bébé à vos dossiers</li>
+            <li>Les démarches liées à vos droits et congés</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="box box--pro">
+        <div class="bx-label"><span class="ic">⚠️</span> Ce qui relève du professionnel</div>
+        <p>Les démarches précises, les délais et les droits dépendent de votre situation et changent régulièrement. Votre maternité, votre caisse d'allocations et votre mairie sont les interlocuteurs fiables. N'hésitez jamais à leur poser des questions, même « bêtes » : c'est leur métier d'y répondre.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 6 — 1.5 -->
+  <section class="page reveal">
+    <div class="band">
+      <span class="band-hero" style="background-image:url('https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_191415_149e129d-cc37-4e1e-a730-246e87824598.jpeg')"></span>
+      <span class="band-label"><span class="p">Partie 1 · On y est presque</span><span class="c">La check-list de préparation</span></span>
+      <span class="band-folio">— 5 —</span>
+    </div>
+    <div class="page-inner">
+      <div class="chap-head">
+        <span class="chap-num">1.5</span>
+        <h2 class="chap-title">La check-list de préparation rassurante</h2>
+      </div>
+
+      <div class="cl-banner">Vous pouvez cocher à votre rythme.<br>Rien n'est à faire en un jour.</div>
+
+      <div class="checklist">
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Le coin sommeil est prêt — ou presque</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">L'essentiel du matériel est réuni</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">La valise de maternité est commencée</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Les premières démarches sont repérées</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Les contacts utiles sont notés quelque part</span>
+        </div>
+      </div>
+
+      <p class="cl-foot">Aucune case n'est plus importante qu'une autre. Et si tout n'est pas coché le jour J — ça arrive très souvent — ce n'est pas grave. Bébé, lui, ne regarde pas la liste.</p>
+    </div>
+  </section>
+
+  <!-- PAGE 7 — 1.6 -->
+  <section class="page reveal">
+    <div class="band">
+      <span class="band-hero" style="background-image:url('https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_191415_149e129d-cc37-4e1e-a730-246e87824598.jpeg')"></span>
+      <span class="band-label"><span class="p">Partie 1 · On y est presque</span><span class="c">La check-list du co-parent</span></span>
+      <span class="band-folio">— 6 —</span>
+    </div>
+    <div class="page-inner">
+      <div class="chap-head">
+        <span class="chap-num">1.6</span>
+        <h2 class="chap-title">La check-list du co-parent</h2>
+      </div>
+
+      <figure class="illus tall">
+        <img alt="Un co-parent qui soutient sa partenaire enceinte"
+             src="https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260522_194138_9445185d-111a-4dea-be77-a0f6ea1d00a4.png">
+      </figure>
+
+      <p class="lead-quote">Pendant des mois, l'attention se porte — légitimement — sur la personne qui porte l'enfant. Mais le co-parent n'est pas un spectateur. Il a un rôle réel, précieux, et souvent mal expliqué. Cette page est la sienne.</p>
+
+      <div class="cl-group">
+        <h4>Pendant les dernières semaines</h4>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Connaître le contenu et l'emplacement de la valise</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Savoir comment se rendre à la maternité — et avoir un plan B</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Repérer les documents importants</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Retenir les numéros utiles</span>
+        </div>
+      </div>
+
+      <div class="cl-group">
+        <h4>Le jour J</h4>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Rester une présence calme</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">S'occuper de l'intendance : sacs, trajets, prévenir les proches</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Être le relais avec l'extérieur, pour laisser l'autre parent tranquille</span>
+        </div>
+      </div>
+
+      <div class="cl-group">
+        <h4>Le retour à la maison</h4>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Prendre en charge les repas et le ménage</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Filtrer les visites</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Protéger le sommeil de tous</span>
+        </div>
+        <div class="check" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="tick"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="ck-text">Offrir des temps de repos sans qu'ils soient demandés</span>
+        </div>
+      </div>
+
+      <div class="box box--retenir">
+        <div class="bx-label"><span class="ic">💛</span> À retenir</div>
+        <p>Le plus beau cadeau du co-parent dans les premiers jours, ce n'est pas un geste héroïque. C'est mille petits gestes ordinaires qui permettent à l'autre de souffler.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<p class="endnote">Fin de la Partie 1 · « Notre première année à 3 »</p>
+
+<script>
+  document.querySelectorAll('.check').forEach(function(c){
+    function toggle(){
+      c.setAttribute('aria-checked', c.getAttribute('aria-checked')==='true'?'false':'true');
+    }
+    c.addEventListener('click',toggle);
+    c.addEventListener('keydown',function(e){
+      if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}
+    });
+  });
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+</script>
+
+</body>
+</html>
