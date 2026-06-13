@@ -1,38 +1,50 @@
 #!/usr/bin/env python3
-# Telechargement des 14 images 4K du livre "Zola et le petit nuage gris"
-# A executer dans a-Shell sur iPhone.
+# Telechargement des 21 images 4K du livre "Zola et le petit nuage gris"
+# Nommage = ordre du chemin de fer (montage Canva). A executer dans a-Shell.
 import os, urllib.request
 
 DEST = os.path.expanduser("~/Documents/Zola_nuage_gris")
 os.makedirs(DEST, exist_ok=True)
 
+BASE = "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/"
+
 IMAGES = {
-    "00_couverture.jpeg": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075009_936881c0-7627-4969-9206-138006dbaac6.jpeg",
-    "01_arrivee.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075015_e754a227-85ee-422d-ab9b-427095e34cbd.png",
-    "02_fresque_excite.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075021_d9229249-77c4-4f88-b9d4-2ec247df438d.png",
-    "03_tous_ensemble.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075026_2d10bdc0-f724-4dc1-8ed8-bd884a1fb7e1.png",
-    "04_tao_oiseau.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075033_1ebdd233-46dc-4e99-a188-11de7e90e7bf.png",
-    "05_nuage_passe.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075039_ba6812ed-31a9-443a-bfc7-de83554c2163.png",
-    "06_bouderie_nuage.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075045_8c99eb95-1c96-4e84-b9c6-f9bf46f23f92.png",
-    "07_chouette.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075053_b4b40220-0c24-4e25-b746-e1cc641d29e5.png",
-    "08_methode_3etapes.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075100_c92dff18-5777-42c8-9d52-6700e3966b3c.png",
-    "09_regarde_allege.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075105_a2486970-f870-4cde-a477-186a337b8d10.png",
-    "10_vers_tao.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075111_cff0ffe8-31d3-4838-a585-1c81663957d3.png",
-    "11_grimpe_soleil.jpeg": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075119_ea774ee7-2e7c-417d-9aaf-ba25ed464f20.jpeg",
-    "12_soir_papa.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075125_3015bc4b-8a53-4a4d-b12f-a2f140158e48.png",
-    "13_recap.png": "https://d8j0ntlcm91z4.cloudfront.net/user_33ZLmugzCzPZPElXa3iEZVG6Gq0/hf_20260613_075132_38cdc8a2-cedf-4053-a4f5-b23a0ccf014d.png",
+    # Habillage / couverture
+    "P01_fauxtitre.jpeg":       BASE+"hf_20260613_075009_936881c0-7627-4969-9206-138006dbaac6.jpeg",
+    # Histoire (ordre narratif final)
+    "P05_grimpe_matin.png":     BASE+"hf_20260613_080414_c92c0d57-e6bb-488e-8648-a0bb364c5c74.png",
+    "P06_arrivee.png":          BASE+"hf_20260613_075015_e754a227-85ee-422d-ab9b-427095e34cbd.png",
+    "P07_fresque_excite.png":   BASE+"hf_20260613_075021_d9229249-77c4-4f88-b9d4-2ec247df438d.png",
+    "P08_tous_ensemble.png":    BASE+"hf_20260613_075026_2d10bdc0-f724-4dc1-8ed8-bd884a1fb7e1.png",
+    "P09_gros_plan_complice.png":BASE+"hf_20260613_080420_f34c7d7c-0ab0-4345-bc17-0272a00044a5.png",
+    "P10_tao_oiseau.png":       BASE+"hf_20260613_075033_1ebdd233-46dc-4e99-a188-11de7e90e7bf.png",
+    "P11_amis_admirent.png":    BASE+"hf_20260613_080426_6abe312e-5956-45be-9c38-30ce0f280279.png",
+    "P12_nuage_passe.png":      BASE+"hf_20260613_075039_ba6812ed-31a9-443a-bfc7-de83554c2163.png",
+    "P13_bouderie_nuage.png":   BASE+"hf_20260613_075045_8c99eb95-1c96-4e84-b9c6-f9bf46f23f92.png",
+    "P14_creux_nuage_sombre.png":BASE+"hf_20260613_080433_f2456c84-5bf3-42d6-964c-46fdcef9a90c.png",
+    "P15_chouette_assoit.png":  BASE+"hf_20260613_075053_b4b40220-0c24-4e25-b746-e1cc641d29e5.png",
+    "P16_chouette_souffle.png": BASE+"hf_20260613_080440_dcac25b2-d690-4303-aa2a-51f33f602d40.png",
+    "P17_methode_3etapes.png":  BASE+"hf_20260613_075100_c92dff18-5777-42c8-9d52-6700e3966b3c.png",
+    "P18_regarde_allege.png":   BASE+"hf_20260613_075105_a2486970-f870-4cde-a477-186a337b8d10.png",
+    "P19_souffle_retrecit.jpeg":BASE+"hf_20260613_080446_f18144f1-320e-45df-a65b-aeba38f99b88.jpeg",
+    "P20_vers_tao.png":         BASE+"hf_20260613_075111_cff0ffe8-31d3-4838-a585-1c81663957d3.png",
+    "P21_grimpe_soleil.jpeg":   BASE+"hf_20260613_075119_ea774ee7-2e7c-417d-9aaf-ba25ed464f20.jpeg",
+    "P22_fresque_finie.png":    BASE+"hf_20260613_080452_0e78f660-429f-4cdc-a5d9-05e535abd456.png",
+    "P23_soir_papa.png":        BASE+"hf_20260613_075125_3015bc4b-8a53-4a4d-b12f-a2f140158e48.png",
+    "P24_recap.png":            BASE+"hf_20260613_075132_38cdc8a2-cedf-4053-a4f5-b23a0ccf014d.png",
 }
 
 print("Telechargement de", len(IMAGES), "images vers", DEST)
+ok = 0
 for name, url in IMAGES.items():
     out = os.path.join(DEST, name)
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=60) as r, open(out, "wb") as f:
+        with urllib.request.urlopen(req, timeout=90) as r, open(out, "wb") as f:
             f.write(r.read())
         kb = os.path.getsize(out) // 1024
-        print("OK  ", name, f"({kb} Ko)")
+        print("OK  ", name, f"({kb} Ko)"); ok += 1
     except Exception as e:
         print("ERR ", name, "->", e)
 
-print("Termine. Dossier:", DEST)
+print(f"\nTermine : {ok}/{len(IMAGES)} images. Dossier : {DEST}")
